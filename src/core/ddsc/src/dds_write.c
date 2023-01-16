@@ -469,9 +469,12 @@ static dds_return_t dds_write_impl_iox (dds_writer *wr, struct ddsi_writer *ddsi
   // The alternative is to block new fast path connections entirely (by holding
   // the mutex) until data delivery is complete.
   const bool use_only_iceoryx =
-      no_network_readers &&
-      ddsi_wr->xqos->durability.kind == DDS_DURABILITY_VOLATILE &&
-      num_fast_path_readers == 0;
+      // Just completely ignore network readers, deliver all data via iceoryx
+      // only, if the QoS policy is suitable
+      ddsi_wr->xqos->durability.kind == DDS_DURABILITY_VOLATILE;
+      //no_network_readers &&
+      //ddsi_wr->xqos->durability.kind == DDS_DURABILITY_VOLATILE &&
+      //num_fast_path_readers == 0;
 
   // 4. Prepare serdata
   // avoid serialization for volatile writers if there are no network readers
